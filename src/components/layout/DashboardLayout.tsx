@@ -1,5 +1,5 @@
-import AppSidebar from "./AppSidebar";
 import AppHeader from "./AppHeader";
+import AppSidebar from "./AppSidebar";
 
 export default function DashboardLayout({
   children,
@@ -7,14 +7,14 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex">
+    <div className="min-h-screen bg-zinc-100">
       <AppSidebar />
 
-      <div className="flex-1">
+      <div className="ml-64 min-h-screen">
         <AppHeader />
 
-        <main className="p-6 bg-zinc-100 min-h-screen">
-          {children}
+        <main className="p-8">
+          <div className="mx-auto max-w-7xl">{children}</div>
         </main>
       </div>
     </div>
