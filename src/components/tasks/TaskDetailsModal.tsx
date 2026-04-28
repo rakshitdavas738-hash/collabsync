@@ -7,7 +7,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
@@ -17,59 +16,63 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import type { Task } from "./KanbanBoard";
+import type { TaskPriority, TaskStatus } from "./CreateTaskModal";
 
-export type TaskStatus = "todo" | "inprogress" | "done";
-export type TaskPriority = "High" | "Medium" | "Low";
-
-export interface NewTask {
-  title: string;
-  priority: TaskPriority;
-  status: TaskStatus;
+interface TaskDetailsModalProps {
+  task: Task | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onUpdateTask: (taskId: string, data: Omit<Task, "id">) => void;
+  onDeleteTask: (taskId: string) => void;
 }
 
-interface CreateTaskModalProps {
-  onCreateTask: (task: NewTask) => void;
-}
+export function TaskDetailsModal({
+  task,
+  open,
+  onOpenChange,
+  onUpdateTask,
+  onDeleteTask,
+}: TaskDetailsModalProps) {
+  const [title, setTitle] = useState(task?.title ?? "");
+  const [priority, setPriority] = useState<TaskPriority>(
+    task?.priority ?? "Medium"
+  );
+  const [status, setStatus] = useState<TaskStatus>(task?.status ?? "todo");
 
-export function CreateTaskModal({ onCreateTask }: CreateTaskModalProps) {
-  const [open, setOpen] = useState(false);
-  const [title, setTitle] = useState("");
-  const [priority, setPriority] = useState<TaskPriority>("Medium");
-  const [status, setStatus] = useState<TaskStatus>("todo");
+  if (!task) return null;
 
-  const handleCreate = () => {
+  const handleSave = () => {
     if (!title.trim()) return;
 
-    onCreateTask({
+    onUpdateTask(task.id, {
       title: title.trim(),
       priority,
       status,
     });
 
-    setTitle("");
-    setPriority("Medium");
-    setStatus("todo");
-    setOpen(false);
+    onOpenChange(false);
+  };
+
+  const handleDelete = () => {
+    onDeleteTask(task.id);
+    onOpenChange(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>Add Task</Button>
-      </DialogTrigger>
-
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create New Task</DialogTitle>
+          <DialogTitle>Task Details</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
           <Input
-            placeholder="Task title"
             value={title}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setTitle(e.target.value)
             }
+            placeholder="Task title"
           />
 
           <Select
@@ -77,7 +80,7 @@ export function CreateTaskModal({ onCreateTask }: CreateTaskModalProps) {
             onValueChange={(value) => setPriority(value as TaskPriority)}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select priority" />
+              <SelectValue placeholder="Priority" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="High">High</SelectItem>
@@ -91,7 +94,7 @@ export function CreateTaskModal({ onCreateTask }: CreateTaskModalProps) {
             onValueChange={(value) => setStatus(value as TaskStatus)}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select status" />
+              <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="todo">Todo</SelectItem>
@@ -100,9 +103,19 @@ export function CreateTaskModal({ onCreateTask }: CreateTaskModalProps) {
             </SelectContent>
           </Select>
 
-          <Button onClick={handleCreate} className="w-full">
-            Create Task
-          </Button>
+          <div className="flex gap-3">
+            <Button onClick={handleSave} className="flex-1">
+              Save Changes
+            </Button>
+
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              className="flex-1"
+            >
+              Delete Task
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
