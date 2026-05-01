@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import DashboardLayout from "@/src/components/layout/DashboardLayout";
-import { StatsCard } from "./StatsCard";
+import { StatsCard } from "../../components/dashboard/StatsCard";
 import { ProjectOverview } from "@/src/components/dashboard/ProjectOverview";
 import { RecentTasks } from "@/src/components/dashboard/RecentTasks";
 import { KanbanBoard, Task } from "@/src/components/tasks/KanbanBoard";
